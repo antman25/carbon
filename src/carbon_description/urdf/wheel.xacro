@@ -1,6 +1,8 @@
-<robot xmlns:xacro="http://ros.org/wiki/xacro" name="titan_wheel">
+<?xml version='1.0'?>
 
-	<xacro:macro name="titan_wheel" params="wheel_prefix *joint_pose">
+<robot xmlns:xacro="http://ros.org/wiki/xacro" name="carbon">
+
+	<xacro:macro name="create_wheel" params="wheel_prefix *joint_pose">
 		<link name="${wheel_prefix}_wheel_link">
 			<inertial>
 				<mass value="5" />

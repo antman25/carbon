@@ -1,0 +1,14 @@
+<?xml version='1.0'?>
+<robot name="carbon" xmlns:xacro="http://www.ros.org/wiki/xacro">
+	<xacro:property name="M_PI" value="3.14159"/>
+	<xacro:property name="rotate90CCW" value="${3.14159 / 2}"/>
+	<xacro:property name="rotate90CW" value="${-3.14159 / 2}"/>
+
+	<xacro:property name="base_x_size" value="0.7556"/>
+	<xacro:property name="base_y_size" value="0.4572"/>
+	<xacro:property name="base_z_size" value="0.0508"/>
+	<xacro:property name="base_mass" value="10"/>
+
+	<xacro:include filename="$(find titan_description)/urdf/macros.xacro" />
+	<xacro:include filename="$(find titan_description)/urdf/wheel.xacro" />
+</robot>

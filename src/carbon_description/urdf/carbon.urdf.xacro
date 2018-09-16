@@ -1,10 +1,10 @@
 <?xml version='1.0'?>
-<robot name="carbon" xmlns:xacro="http://www.ros.org/wiki/xacro">
+<robot name="carbon" xmlns:xacro="http://ros.org/wiki/xacro">
 	<xacro:property name="M_PI" value="3.14159"/>
 	<xacro:property name="rotate90CCW" value="${3.14159 / 2}"/>
 	<xacro:property name="rotate90CW" value="${-3.14159 / 2}"/>
 
-	<xacro:property name="wheel_radius" value="0.09" />
+	<xacro:property name="wheel_radius" value="0.097155" />
 	<xacro:property name="wheel_length" value="0.0508" />
 
 	<xacro:property name="base_x_size" value="0.7556"/>
@@ -12,10 +12,109 @@
 	<xacro:property name="base_z_size" value="0.0508"/>
 	<xacro:property name="base_mass" value="10"/>
 
-	<xacro:include filename="$(find titan_description)/urdf/macros.xacro" />
-	<xacro:include filename="$(find titan_description)/urdf/wheel.xacro" />
+	<xacro:property name="wheelbase" value="0.58" />
+	<xacro:property name="track" value="0.25" />
+	<xacro:property name="wheel_vertical_offset" value="0.0" />
+	
+
+	<xacro:arg name="robot_namespace" default="/" />
+
+	<xacro:include filename="$(find carbon_description)/urdf/macros.xacro" />
+	<xacro:include filename="$(find carbon_description)/urdf/wheel.xacro" />
+	<xacro:include filename="$(find carbon_description)/urdf/sick_tim.urdf.xacro" />
 
 	<link name="base_link">
-		<xacro:make_box x="0.0" y="0.0" z="0.0" roll="0" pitch="0" yaw="0" sizex="${base_x_size}" sizey="${base_y_size}" sizez="${base_z_size}"/>		
+		
+
+		<collision name='collision'>
+			<origin xyz="0 0 0" rpy="0 0 0" />
+			<geometry>
+				<box size="${base_x_size} ${base_y_size} ${base_z_size}"/>
+			</geometry>
+		</collision>
+
+		<visual name='base_solid'>
+			<origin xyz="0 0 0" rpy="0 0 0" />
+			<geometry>
+				<box size="${base_x_size} ${base_y_size} ${base_z_size}"/>
+			</geometry>
+			<material name="white"/>
+		</visual>	
 	</link>
+
+	<link name="base_inertia_link">
+		<inertial>
+			<mass value="${base_mass}" />
+			<origin xyz="0 0 0" rpy=" 0 0 0"/>
+			<xacro:box_inertia m="${base_mass}" x="${base_x_size}" y="${base_y_size}" z="${base_z_size}" />
+		</inertial>
+	</link>
+
+	
+	<xacro:sick_tim551 name="laser" ros_topic="scan" />
+
+	<joint name="base_to_inertia" type="fixed">
+		<parent link="base_link"/>
+		<child link="base_inertia_link"/>
+		<origin xyz="0 0 0" rpy="0 0 0" />
+	</joint>
+
+	<joint name="base_to_laser" type="fixed">
+		<parent link="base_link"/>
+		<child link="laser_mount_link"/>
+		<origin xyz="0.31 0.0 0.08" rpy="0 0 0" />
+	</joint>
+
+
+	<xacro:create_wheel wheel_prefix="left_front">
+		<origin xyz="${track} ${wheelbase/2} ${wheel_vertical_offset}" rpy="0 0 0" />
+	</xacro:create_wheel>
+
+	<xacro:create_wheel wheel_prefix="left_mid">
+                <origin xyz="0 ${wheelbase/2} ${wheel_vertical_offset}" rpy="0 0 0" />
+        </xacro:create_wheel>
+
+	<xacro:create_wheel wheel_prefix="left_rear">
+		<origin xyz="${-track} ${wheelbase/2} ${wheel_vertical_offset}" rpy="0 0 0" />
+	</xacro:create_wheel>
+
+
+	<xacro:create_wheel wheel_prefix="right_front">
+		<origin xyz="${track} ${-wheelbase/2} ${wheel_vertical_offset}" rpy="0 0 0" />
+	</xacro:create_wheel>
+
+	<xacro:create_wheel wheel_prefix="right_mid">
+                <origin xyz="0 ${-wheelbase/2} ${wheel_vertical_offset}" rpy="0 0 0" />
+        </xacro:create_wheel>
+
+	<xacro:create_wheel wheel_prefix="right_rear">
+		<origin xyz="${-track} ${-wheelbase/2} ${wheel_vertical_offset}" rpy="0 0 0" />
+	</xacro:create_wheel>
+
+	<gazebo>
+		<plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
+			<robotNamespace>$(arg robot_namespace)</robotNamespace>
+		</plugin>
+	</gazebo>
+
+
+	<gazebo>
+		<plugin name="diff_drive_6w" filename="libdiffdrive_plugin_6w.so">
+			<robotNamespace>$(arg robot_namespace)</robotNamespace>
+			<topicName>/cmd_vel</topicName>
+
+			<frontLeftJoint>left_front_wheel</frontLeftJoint>
+			<midLeftJoint>left_mid_wheel</midLeftJoint>
+			<rearLeftJoint>left_rear_wheel</rearLeftJoint>
+
+			<frontRightJoint>right_front_wheel</frontRightJoint>
+			<midRightJoint>right_mid_wheel</midRightJoint>
+			<rearRightJoint>right_rear_wheel</rearRightJoint>
+
+			<wheelSeparation>0.58</wheelSeparation>
+			<wheelDiameter>0.18</wheelDiameter>
+			<torque>50000</torque>
+		</plugin>
+		
+	</gazebo>
 </robot>

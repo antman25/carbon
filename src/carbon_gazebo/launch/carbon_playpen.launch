@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+
+<launch>
+
+
+  <include file="$(find carbon_gazebo)/launch/playpen.launch" />
+
+  <include file="$(find carbon_gazebo)/launch/spawn_carbon.launch"/>
+
+</launch>

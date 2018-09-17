@@ -116,7 +116,7 @@
 	</gazebo>
 
 
-	<gazebo>
+	<!-- <gazebo>
 		<plugin name="diff_drive_6w" filename="libdiffdrive_plugin_6w.so">
 			<robotNamespace>$(arg robot_namespace)</robotNamespace>
 			<topicName>/carbon_velocity_controller/cmd_vel</topicName>
@@ -133,7 +133,7 @@
 			<wheelDiameter>0.18</wheelDiameter>
 			<torque>50000</torque>
 		</plugin>
-	</gazebo>
+	</gazebo> -->
 
 	<!-- <gazebo>
 		<plugin name="diffdrive_plugin_multiwheel" filename="libdiffdrive_plugin_multi_wheel.so">

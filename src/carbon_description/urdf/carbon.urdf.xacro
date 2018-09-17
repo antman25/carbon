@@ -50,6 +50,18 @@
 		</inertial>
 	</link>
 
+	<link name="imu_link">	
+		<visual name='imu_box'>
+			<origin xyz="0 0 0" rpy="0 0 0"/>
+			<geometry>
+				<box size="0.02 0.02 0.02"/>
+			</geometry>
+			<material name="green"/>
+		</visual>
+	</link>
+
+	<gazebo reference="imu_link">
+  	</gazebo>
 	
 	<xacro:sick_tim551 name="laser" ros_topic="scan" />
 
@@ -63,6 +75,12 @@
 		<parent link="base_link"/>
 		<child link="laser_mount_link"/>
 		<origin xyz="0.31 0.0 0.08" rpy="0 0 0" />
+	</joint>
+
+	<joint name="base_to_imu" type="fixed">
+		<parent link="base_link"/>
+		<child link="imu_link"/>
+		<origin xyz="0 0 0" rpy="0 0 0"/>
 	</joint>
 
 
@@ -101,7 +119,7 @@
 	<gazebo>
 		<plugin name="diff_drive_6w" filename="libdiffdrive_plugin_6w.so">
 			<robotNamespace>$(arg robot_namespace)</robotNamespace>
-			<topicName>/cmd_vel</topicName>
+			<topicName>/carbon_velocity_controller/cmd_vel</topicName>
 
 			<frontLeftJoint>left_front_wheel</frontLeftJoint>
 			<midLeftJoint>left_mid_wheel</midLeftJoint>
@@ -115,6 +133,51 @@
 			<wheelDiameter>0.18</wheelDiameter>
 			<torque>50000</torque>
 		</plugin>
-		
+	</gazebo>
+
+	<!-- <gazebo>
+		<plugin name="diffdrive_plugin_multiwheel" filename="libdiffdrive_plugin_multi_wheel.so">
+			<alwaysOn>true</alwaysOn>
+			<updateRate>25.0</updateRate>
+			<leftJoints>left_front_wheel left_mid_wheel left_rear_wheel</leftJoints>
+			<rightJoints>right_front_wheel right_mid_wheel right_rear_wheel</rightJoints>
+			<wheelSeparation>${wheelbase}</wheelSeparation>
+			<wheelDiameter>${wheel_radius*2}</wheelDiameter>
+			<torque>50000</torque>
+			<robotNamespace>/</robotNamespace>
+			<robotBaseFrame>base_link</robotBaseFrame>
+			<commandTopic>/cmd_vel_raw</commandTopic>
+			<publishOdometryTf>0</publishOdometryTf>
+			<publishOdometryMsg>1</publishOdometryMsg>
+		</plugin>
+	</gazebo> -->
+
+	
+	<!-- <gazebo>
+		<plugin name="force_based_move_controller" filename="libgazebo_ros_force_based_move.so">
+			<commandTopic>/carbon_velocity_controller/cmd_vel</commandTopic>
+			<odometryTopic>odom</odometryTopic>
+			<odometryFrame>odom</odometryFrame>
+			<odometryRate>20.0</odometryRate>
+			<robotBaseFrame>base_link</robotBaseFrame>
+			<yaw_velocity_p_gain>250</yaw_velocity_p_gain>
+			<publishOdometryTf>0</publishOdometryTf>
+		</plugin>
+	</gazebo> -->
+	
+
+	<gazebo>
+		<plugin name="imu_controller" filename="libhector_gazebo_ros_imu.so">
+			<robotNamespace>$(arg robot_namespace)</robotNamespace>
+			<updateRate>50.0</updateRate>
+			<bodyName>base_link</bodyName>
+			<topicName>imu/data</topicName>
+			<accelDrift>0.005 0.005 0.005</accelDrift>
+			<accelGaussianNoise>0.005 0.005 0.005</accelGaussianNoise>
+			<rateDrift>0.005 0.005 0.005 </rateDrift>
+			<rateGaussianNoise>0.005 0.005 0.005 </rateGaussianNoise>
+			<headingDrift>0.005</headingDrift>
+			<headingGaussianNoise>0.005</headingGaussianNoise>
+		</plugin>
 	</gazebo>
 </robot>

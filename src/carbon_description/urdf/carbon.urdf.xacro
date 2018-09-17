@@ -60,6 +60,23 @@
 		</visual>
 	</link>
 
+	<link name="camera_link">
+                <visual name='camera_box'>
+                        <origin xyz="0 0 0" rpy="0 0 0"/>
+                        <geometry>
+                                <box size="0.05 0.05 0.05"/>
+                        </geometry>
+                        <material name="green"/>
+                </visual>
+		<inertial>
+                        <mass value="${0.005}" />
+                        <origin xyz="0 0 0" rpy=" 0 0 0"/>
+                        <xacro:box_inertia m="${0.005}" x="${0.05}" y="${0.05}" z="${0.05}" />
+                </inertial>
+
+        </link>
+
+
 	<gazebo reference="imu_link">
   	</gazebo>
 	
@@ -82,6 +99,12 @@
 		<child link="imu_link"/>
 		<origin xyz="0 0 0" rpy="0 0 0"/>
 	</joint>
+
+	<joint name="base_to_camera" type="fixed">
+                <parent link="base_link"/>   
+                <child link="camera_link"/> 
+                <origin xyz="0.0 0.0 0.6" rpy="0.0 0.0 0.0" />
+        </joint>
 
 
 	<xacro:create_wheel wheel_prefix="left_front">
@@ -115,57 +138,6 @@
 		</plugin>
 	</gazebo>
 
-
-	<!-- <gazebo>
-		<plugin name="diff_drive_6w" filename="libdiffdrive_plugin_6w.so">
-			<robotNamespace>$(arg robot_namespace)</robotNamespace>
-			<topicName>/carbon_velocity_controller/cmd_vel</topicName>
-
-			<frontLeftJoint>left_front_wheel</frontLeftJoint>
-			<midLeftJoint>left_mid_wheel</midLeftJoint>
-			<rearLeftJoint>left_rear_wheel</rearLeftJoint>
-
-			<frontRightJoint>right_front_wheel</frontRightJoint>
-			<midRightJoint>right_mid_wheel</midRightJoint>
-			<rearRightJoint>right_rear_wheel</rearRightJoint>
-
-			<wheelSeparation>0.58</wheelSeparation>
-			<wheelDiameter>0.18</wheelDiameter>
-			<torque>50000</torque>
-		</plugin>
-	</gazebo> -->
-
-	<!-- <gazebo>
-		<plugin name="diffdrive_plugin_multiwheel" filename="libdiffdrive_plugin_multi_wheel.so">
-			<alwaysOn>true</alwaysOn>
-			<updateRate>25.0</updateRate>
-			<leftJoints>left_front_wheel left_mid_wheel left_rear_wheel</leftJoints>
-			<rightJoints>right_front_wheel right_mid_wheel right_rear_wheel</rightJoints>
-			<wheelSeparation>${wheelbase}</wheelSeparation>
-			<wheelDiameter>${wheel_radius*2}</wheelDiameter>
-			<torque>50000</torque>
-			<robotNamespace>/</robotNamespace>
-			<robotBaseFrame>base_link</robotBaseFrame>
-			<commandTopic>/cmd_vel_raw</commandTopic>
-			<publishOdometryTf>0</publishOdometryTf>
-			<publishOdometryMsg>1</publishOdometryMsg>
-		</plugin>
-	</gazebo> -->
-
-	
-	<!-- <gazebo>
-		<plugin name="force_based_move_controller" filename="libgazebo_ros_force_based_move.so">
-			<commandTopic>/carbon_velocity_controller/cmd_vel</commandTopic>
-			<odometryTopic>odom</odometryTopic>
-			<odometryFrame>odom</odometryFrame>
-			<odometryRate>20.0</odometryRate>
-			<robotBaseFrame>base_link</robotBaseFrame>
-			<yaw_velocity_p_gain>250</yaw_velocity_p_gain>
-			<publishOdometryTf>0</publishOdometryTf>
-		</plugin>
-	</gazebo> -->
-	
-
 	<gazebo>
 		<plugin name="imu_controller" filename="libhector_gazebo_ros_imu.so">
 			<robotNamespace>$(arg robot_namespace)</robotNamespace>
@@ -180,4 +152,30 @@
 			<headingGaussianNoise>0.005</headingGaussianNoise>
 		</plugin>
 	</gazebo>
+
+	<plugin name="camera_plugin" filename="libgazebo_ros_openni_kinect.so">
+		<baseline>0.2</baseline>
+		<alwaysOn>true</alwaysOn>
+		<!-- Keep this zero, update_rate in the parent <sensor> tag
+		will control the frame rate. -->
+		<updateRate>0.0</updateRate>
+		<cameraName>camera_ir</cameraName>
+		<imageTopicName>/camera/depth/image_raw</imageTopicName>
+		<cameraInfoTopicName>/camera/depth/camera_info</cameraInfoTopicName>
+		<depthImageTopicName>/camera/depth/image_raw</depthImageTopicName>
+		<depthImageInfoTopicName>/camera/depth/camera_info</depthImageInfoTopicName>
+		<pointCloudTopicName>/camera/depth/points</pointCloudTopicName>
+		<frameName>camera_link</frameName>
+		<pointCloudCutoff>0.05</pointCloudCutoff>
+		<distortionK1>0</distortionK1>
+		<distortionK2>0</distortionK2>
+		<distortionK3>0</distortionK3>
+		<distortionT1>0</distortionT1>
+		<distortionT2>0</distortionT2>
+		<CxPrime>0</CxPrime>
+		<Cx>0</Cx>
+		<Cy>0</Cy>
+		<focalLength>0</focalLength>
+		<hackBaseline>0</hackBaseline>
+	</plugin>
 </robot>

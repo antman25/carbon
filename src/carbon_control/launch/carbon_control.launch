@@ -2,8 +2,16 @@
 <launch>
   <include file="$(find carbon_description)/launch/description.launch" />
 
+  <include file="$(find carbon_control)/launch/teleop.launch" />
+
   <!-- Load joint controller configurations from YAML file to parameter server -->
   <rosparam file="$(find carbon_control)/config/carbon_control.yaml" command="load"/>
+
+  <node pkg="robot_localization" type="ekf_localization_node" name="ekf_localization">
+	<rosparam command="load" file="$(find carbon_control)/config/localization.yaml" />
+	<remap from="odometry/filtered" to="odom"/>
+  </node>
+	
 
   <!-- load the controllers -->
   <node name="controller_spawner_base" pkg="controller_manager" type="spawner" respawn="false"    output="screen" 
@@ -16,5 +24,11 @@
   <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" respawn="false" output="screen">
     <remap from="/joint_states" to="/joint_states" />
   </node>
+
+	<node pkg="twist_mux" type="twist_mux" name="twist_mux">
+		<rosparam command="load" file="$(find carbon_control)/config/twist_mux.yaml" />
+		<remap from="cmd_vel_out" to="carbon_velocity_controller/cmd_vel"/>
+	</node>
+
 
 </launch>

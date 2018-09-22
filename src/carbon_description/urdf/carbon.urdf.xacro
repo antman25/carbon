@@ -18,6 +18,14 @@
 	
 
 	<xacro:arg name="robot_namespace" default="/" />
+   	<xacro:property name="cal_kinect_roll" value="0.0" />
+	<xacro:property name="cal_kinect_pitch" value="0.0" />
+	<xacro:property name="cal_kinect_yaw" value="0.0" />
+
+	<xacro:property name="cal_kinect_x" value="0.0" />
+	<xacro:property name="cal_kinect_y" value="0.0" />
+	<xacro:property name="cal_kinect_z" value="0.0" />
+
 
 	<xacro:include filename="$(find carbon_description)/urdf/macros.xacro" />
 	<xacro:include filename="$(find carbon_description)/urdf/wheel.xacro" />
@@ -107,6 +115,12 @@
         </joint>
 
 
+	 <xacro:include filename="$(find carbon_description)/urdf/kinect2.urdf.xacro" />
+	 <xacro:kinect2_v0 name="kinect_mount" parent="camera_link" >
+	 	<origin xyz="0.0 0 0.0" rpy="0 0 0" />
+	 </xacro:kinect2_v0>
+
+
 	<xacro:create_wheel wheel_prefix="left_front">
 		<origin xyz="${track} ${wheelbase/2} ${wheel_vertical_offset}" rpy="0 0 0" />
 	</xacro:create_wheel>
@@ -153,29 +167,4 @@
 		</plugin>
 	</gazebo>
 
-	<plugin name="camera_plugin" filename="libgazebo_ros_openni_kinect.so">
-		<baseline>0.2</baseline>
-		<alwaysOn>true</alwaysOn>
-		<!-- Keep this zero, update_rate in the parent <sensor> tag
-		will control the frame rate. -->
-		<updateRate>0.0</updateRate>
-		<cameraName>camera_ir</cameraName>
-		<imageTopicName>/camera/depth/image_raw</imageTopicName>
-		<cameraInfoTopicName>/camera/depth/camera_info</cameraInfoTopicName>
-		<depthImageTopicName>/camera/depth/image_raw</depthImageTopicName>
-		<depthImageInfoTopicName>/camera/depth/camera_info</depthImageInfoTopicName>
-		<pointCloudTopicName>/camera/depth/points</pointCloudTopicName>
-		<frameName>camera_link</frameName>
-		<pointCloudCutoff>0.05</pointCloudCutoff>
-		<distortionK1>0</distortionK1>
-		<distortionK2>0</distortionK2>
-		<distortionK3>0</distortionK3>
-		<distortionT1>0</distortionT1>
-		<distortionT2>0</distortionT2>
-		<CxPrime>0</CxPrime>
-		<Cx>0</Cx>
-		<Cy>0</Cy>
-		<focalLength>0</focalLength>
-		<hackBaseline>0</hackBaseline>
-	</plugin>
 </robot>
